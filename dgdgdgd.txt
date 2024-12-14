@@ -7455,8 +7455,6 @@ local Toggle = Tabs.Misc:AddToggle("ToggleLe", {Title = "Toggle", Default = fals
             if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Diablo") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Deandre") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Urban") then
                 Options.ToggleLevel:SetValue(false)
                 Options.ToggleElite:SetValue(true)
-            else
-                Options.ToggleLevel:SetValue(true)
         end
     end)
 
