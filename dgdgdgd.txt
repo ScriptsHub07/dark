@@ -2749,7 +2749,6 @@ end)
         Default = false })
     ToggleLevel:OnChanged(function(Value)
         _G.AutoLevel = Value
-        StopTween(_G.AutoLevel)
         if Value == false then
             wait()
             toTarget(game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.CFrame)
@@ -4197,7 +4196,6 @@ spawn(function()
 
     ToggleElite:OnChanged(function(Value)
        _G.AutoElite = Value
-       StopTween(_G.AutoElite)
        end)
        Options.ToggleElite:SetValue(false)
        spawn(function()
@@ -4226,7 +4224,6 @@ spawn(function()
                                        end
                                    end
                                else
-                                 
                                    if game:GetService("ReplicatedStorage"):FindFirstChild("Diablo") then
                                     toTarget(game:GetService("ReplicatedStorage"):FindFirstChild("Diablo").HumanoidRootPart.CFrame * CFrame.new(posX,posY,posZ))
                                    elseif game:GetService("ReplicatedStorage"):FindFirstChild("Deandre") then
@@ -7449,15 +7446,22 @@ spawn(function()
 end)
 end
 
-if _G.AutoLevel and _G.AutoElite then
-    if  Lv >= 2550 then
-        _G.AutoLevel = false
-        _G.AutoElite = true
-    elseif Lv <= 2550 then
-        _G.AutoLevel = true
-        _G.AutoElite = false
-    end
-end
+
+local Toggle = Tabs.Misc:AddToggle("ToggleLe", {Title = "Toggle", Default = false })
+
+    Toggle:OnChanged(function()
+        Options.ToggleLevel:SetValue(true)
+        Options.ToggleElite:SetValue(false)
+            if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Diablo") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Deandre") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Urban") then
+                Options.ToggleLevel:SetValue(false)
+                Options.ToggleElite:SetValue(true)
+            else
+                Options.ToggleLevel:SetValue(true)
+        end
+    end)
+
+    Options.ToggleLe:SetValue(false)
+
 
 Fluent:Notify({
     Title = "Tsuo Hub",
