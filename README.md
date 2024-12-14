@@ -7450,10 +7450,9 @@ end)
 end
 
 if _G.AutoLevel and _G.CakePrince or _G.AutoCakeV2 or _G.SpawnCakePrince then
-    local Lv = game:GetService("Players").LocalPlayer.Data.Level.Value
+    CheckLevel()
     if  Lv >= 2550 then
         _G.AutoLevel = false
-        CheckLevel()
     elseif Lv <= 2550 then
         _G.CakePrince = false
         _G.AutoCakeV2 = false
