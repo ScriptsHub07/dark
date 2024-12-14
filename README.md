@@ -7449,6 +7449,21 @@ spawn(function()
 end)
 end
 
+if _G.AutoLevel and _G.CakePrince or _G.AutoCakeV2 or _G.SpawnCakePrince then
+    local Lv = game:GetService("Players").LocalPlayer.Data.Level.Value
+    if  Lv >= 2550 then
+        _G.AutoLevel = false
+        CheckLevel()
+        local Lv = game:GetService("Players").LocalPlayer.Data.Level.Value
+    elseif Lv <= 2550 then
+        _G.CakePrince = false
+        _G.AutoCakeV2 = false
+        _G.SpawnCakePrince = false
+        CheckLevel()
+        local Lv = game:GetService("Players").LocalPlayer.Data.Level.Value
+    end
+end
+
 Fluent:Notify({
     Title = "Tsuo Hub",
     Content = "Obrigado por usar o Tsuo Hub",
