@@ -7456,6 +7456,7 @@ local Toggle = Tabs.Misc:AddToggle("ToggleLe", {Title = "Toggle", Default = fals
                 Options.ToggleLevel:SetValue(false)
                 Options.ToggleElite:SetValue(true)
         end
+	wait(45)
     end)
 
     Options.ToggleLe:SetValue(false)
