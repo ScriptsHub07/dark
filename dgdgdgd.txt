@@ -2649,9 +2649,9 @@ end
 
 Tabs.Main:AddButton({
         Title = "Tsuo Hub Discord Server",
-        Description = "Very important",
+        Description = "",
         Callback = function()
-        setclipboard("Discord de vocês")
+        setclipboard("Discord")
         end
         })
 local Farming = Tabs.Main:AddSection("Farming")
@@ -2668,11 +2668,11 @@ local FastAttack = {'Normal Attack','Fast Attack','Super Fast Attack'}
     DropdownDelayAttack:OnChanged(function(Value)
     _G.FastAttackFaiFao_Mode = Value
 	if _G.FastAttackFaiFao_Mode == "Fast Attack" then
-		_G.Fast_Delay = 0.001
+		_G.Fast_Delay = 0.5
 	elseif _G.FastAttackFaiFao_Mode == "Normal Attack" then
-		_G.Fast_Delay = 2
+		_G.Fast_Delay = 0.9
 	elseif _G.FastAttackFaiFao_Mode == "Super Fast Attack" then
-		_G.Fast_Delay = 0.001
+		_G.Fast_Delay = 0.3
 	end
 end)
 
