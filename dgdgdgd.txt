@@ -7446,21 +7446,6 @@ spawn(function()
 end)
 end
 
-
-local Toggle = Tabs.Misc:AddToggle("ToggleLe", {Title = "Toggle", Default = false })
-
-    Toggle:OnChanged(function()
-        if _G.AutoLevel and _G.AutoElite then
-            Options.ToggleLevel:SetValue(true)
-            Options.ToggleElite:SetValue(false)
-        elseif string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Diablo") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Deandre") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Urban") then
-            Options.ToggleLevel:SetValue(false)
-            Options.ToggleElite:SetValue(true)
-        end
-        wait(50)
-        Options.ToggleLevel:SetValue(true)
-    end)
-
 Fluent:Notify({
     Title = "Tsuo Hub",
     Content = "Obrigado por usar o Tsuo Hub",
