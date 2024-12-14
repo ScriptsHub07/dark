@@ -7450,17 +7450,16 @@ end
 local Toggle = Tabs.Misc:AddToggle("ToggleLe", {Title = "Toggle", Default = false })
 
     Toggle:OnChanged(function()
-        Options.ToggleLevel:SetValue(true)
-        Options.ToggleElite:SetValue(false)
-            if string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Diablo") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Deandre") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Urban") then
-                Options.ToggleLevel:SetValue(false)
-                Options.ToggleElite:SetValue(true)
+        if _G.AutoLevel and _G.AutoElite then
+            Options.ToggleLevel:SetValue(true)
+            Options.ToggleElite:SetValue(false)
+        elseif string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Diablo") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Deandre") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text,"Urban") then
+            Options.ToggleLevel:SetValue(false)
+            Options.ToggleElite:SetValue(true)
         end
-	wait(45)
+        wait(50)
+        Options.ToggleLevel:SetValue(true)
     end)
-
-    Options.ToggleLe:SetValue(false)
-
 
 Fluent:Notify({
     Title = "Tsuo Hub",
