@@ -56,7 +56,7 @@ elseif placeId == 7449423635 then
 Third_Sea = true
 end
 
-local player = game.Players.LocalPlayer.Data.Level.Value 
+local player = game:GetService("Players").LocalPlayer.Data.Level.Value 
 --// Check Quest
 function CheckLevel()
 local Lv = player
