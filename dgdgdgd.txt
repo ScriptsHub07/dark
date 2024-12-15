@@ -678,7 +678,6 @@ CFrameMon = CFrame.new(-16848.94140625, 21.68633460998535, 1041.4490966796875)
 end
 end
 end
-end
 
 --// Select Monster
 if First_Sea then
@@ -955,7 +954,6 @@ elseif SelectBoss == "rip_indra True Form" then
 BossMon = "rip_indra True Form"
 NameBoss = 'rip_indra True Form'
 CFrameBoss = CFrame.new(-5415.3920898438, 505.74133300781, -2814.0166015625)
-end
 end
 end
 end
