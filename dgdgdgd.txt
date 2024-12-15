@@ -58,7 +58,7 @@ end
 
 local player = game:GetService("Players").LocalPlayer.Data.Level.Value
 --// Check Quest
-local function CheckLevel()
+function CheckLevel()
 local Lv = player
 if First_Sea then
 if Lv == 1 or Lv <= 9 or SelectMonster == "Bandit" or SelectArea == '' then -- Bandit
@@ -955,6 +955,7 @@ elseif SelectBoss == "rip_indra True Form" then
 BossMon = "rip_indra True Form"
 NameBoss = 'rip_indra True Form'
 CFrameBoss = CFrame.new(-5415.3920898438, 505.74133300781, -2814.0166015625)
+end
 end
 end
 end
