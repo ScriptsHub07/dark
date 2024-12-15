@@ -56,9 +56,9 @@ elseif placeId == 7449423635 then
 Third_Sea = true
 end
 
-local player = game:GetService("Players").LocalPlayer.Data.Level.Value 
+local player = game:GetService("Players").LocalPlayer.Data.Level.Value
 --// Check Quest
-function CheckLevel()
+local function CheckLevel()
 local Lv = player
 if First_Sea then
 if Lv == 1 or Lv <= 9 or SelectMonster == "Bandit" or SelectArea == '' then -- Bandit
@@ -675,6 +675,7 @@ QuestLv = 2
 NameMon = "Isle Champion"
 CFrameQ = CFrame.new(-16542.447265625, 55.68632888793945, 1044.41650390625)
 CFrameMon = CFrame.new(-16848.94140625, 21.68633460998535, 1041.4490966796875)
+end
 end
 end
 end
