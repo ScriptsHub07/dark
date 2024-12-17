@@ -203,7 +203,6 @@ local function getMethodLoading()
 		["System"] = {
 			["WebhookLive"] = "";
 			["WebhookRequest"] = "";
-			["BREAKALLTHISSHITHAHAHAHAHA"] = false;
 			["Selected_Boss"] = {
 				["Obj"] = nil; ["Auto"] = false;
 			};
@@ -1915,85 +1914,89 @@ local function getMethodLoading()
 		IgnoreE = false;
 	end;
 
-	local Windows = NothingLibrary.new({
-		Title = "Blox Fruit [Full Acess Settings]",
-		Description = "By Neuron X [Optimize Version 1.0.1]",
-		Keybind = Enum.KeyCode.T,
-		Logo = 'http://www.roblox.com/asset/?id=80055499055359'
-	});
-	local TabFrame = Windows:NewTab({
-		Title = "General",
-		Description = "Main section",
-		Icon = "rbxassetid://7743870134"
-	});
-	local Section = TabFrame:NewSection({
-		Title = "Weapon",
-		Icon = "rbxassetid://7743869054",
-		Position = "Left"
-	});
-	SWW = Section:NewDropdown({
-		Title = "Select Weapon",
-		Data = {"nil"},
-		Default = "nil",
-		Callback = function(a)
-			Configs.Farming.Weapon = a.Name;
-		end,
-	});
-	Section:NewButton({
-		Title = "Refresh Weapons",
-		Callback = function()
-			SWW.Set(BP());
-		end,
-	});
-	local Section = TabFrame:NewSection({
-		Title = "Stats",
-		Icon = "rbxassetid://7743869054",
-		Position = "Left"
-	});
-	Section:NewToggle({
-		Title = "Melee",
-		Default = Configs.Stats.Melee,
-		Callback = function(tr)
-			Configs.Stats.Melee = tr;
-		end,
-	});
-	Section:NewToggle({
-		Title = "Defense",
-		Default = Configs.Stats.Defense,
-		Callback = function(tr)
-			Configs.Stats.Defense = tr;
-		end,
-	});
-	Section:NewToggle({
-		Title = "Sword",
-		Default = Configs.Stats.Sword,
-		Callback = function(tr)
-			Configs.Stats.Sword = tr;
-		end,
-	});
-	Section:NewToggle({
-		Title = "Gun",
-		Default = Configs.Stats.Gun,
-		Callback = function(tr)
-			Configs.Stats.Gun = tr;
-		end,
-	});
-	Section:NewToggle({
-		Title = "BloxFruit",
-		Default = Configs.Stats.BloxFruit,
-		Callback = function(tr)
-			Configs.Stats.BloxFruit = tr;
-		end,
-	});
-	Section:NewSlider({
-		Title = "Points",
-		Min = 1,
-		Max = 50,
-		Default = Configs.Stats.Points,
-		Callback = function(a)
-			Configs.Stats.Points = a;
-		end,
-	})
+
+	local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
+
+local Window = Fluent:CreateWindow({
+    Title = "Dark X Kaitun",
+    SubTitle = "by dark_souls769",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 460),
+    Acrylic = true, -- The blur may be detectable, setting this to false disables blur entirely
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.LeftControl -- Used when theres no MinimizeKeybind
+})
+
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "" })
+}
+
+Tabs.Main:AddParagraph({
+	Title = "Weapon",
+	Content = ""
+})
+
+local Dropdown = Tabs.Main:AddDropdown("Dropdown", {
+	Title = "Select Weapon",
+	Values = {"nil"},
+	Multi = false,
+	Default = "nil",
+})
+
+Dropdown:OnChanged(function(Value)
+	Configs.Farming.Weapon = Value.Name;
+end)
+
+Tabs.Main:AddParagraph({
+	Title = "Stats",
+	Content = ""
+})
+	
+local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Melee", Default = false })
+
+    Toggle:OnChanged(function(tr)
+        Configs.Stats.Melee = tr;
+    end)
+	
+	local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Defense", Default = false })
+
+    Toggle:OnChanged(function(tr)
+        Configs.Stats.Defense = tr;
+    end)
+
+	local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Sword", Default = false })
+
+    Toggle:OnChanged(function(tr)
+        Configs.Stats.Sword = tr;
+    end)
+
+	local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "Gun", Default = false })
+
+    Toggle:OnChanged(function(tr)
+        Configs.Stats.Gun = tr;
+    end)
+
+	local Toggle = Tabs.Main:AddToggle("MyToggle", {Title = "BloxFruit", Default = false })
+
+    Toggle:OnChanged(function(tr)
+        Configs.Stats.BloxFruit = tr;
+    end)
+
+	local Slider = Tabs.Main:AddSlider("Slider", {
+        Title = "Points",
+        Description = "",
+        Default = 1,
+        Min = 1,
+        Max = 50,
+        Rounding = 1,
+        Callback = function(a)
+            Configs.Stats.Points = a;
+        end
+    })
+
+
 	local Section = TabFrame:NewSection({
 		Title = "Farming | Level",
 		Icon = "rbxassetid://7743869054",
