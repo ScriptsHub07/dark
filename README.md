@@ -1725,7 +1725,7 @@ spawn(function()
     end
 end)
 
-Fast Attack
+--[[// Fast Attack
 local CombatFramework = require(game:GetService('Players').LocalPlayer.PlayerScripts.CombatFramework)
 
 function GetCurrentBlade()
@@ -1781,15 +1781,15 @@ function AttackNoCD()
             end)
         end
     end
-end
+end]]
 
-local FastAttack = true
+--[[local FastAttack = true
 Main_Setting:addToggle('Fast Attack 1 (Selected Delay)', FastAttack, function(Value)
     FastAttack = Value
-end)
+end)]]
 
 
-spawn(function()
+--[[spawn(function()
     while task.wait() do
         if FastAttack then
             local CameraShakerR = require(game.ReplicatedStorage.Util.CameraShaker)
@@ -1802,9 +1802,9 @@ spawn(function()
             end)
         end
     end
-end)
+end)]]
 
-Main_Setting:addToggle('Fast Attack 2 (Without Selected Delay)', MobileFastAttack, function(Value)
+--[[Main_Setting:addToggle('Fast Attack 2 (Without Selected Delay)', MobileFastAttack, function(Value)
     MobileFastAttack = Value
 end)
 spawn(function()
@@ -1829,7 +1829,7 @@ spawn(function()
             end)
         end
     end
-end)
+end)]]
 
 --// BRING MOBS
 function BringMonster(TargetName, TargetCFrame)
