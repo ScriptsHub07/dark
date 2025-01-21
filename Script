@@ -5,6 +5,7 @@ local Window = Library:CreateWindow('Dark x Hub')
 local Tab = {
     Tab_1 = Window:addTab('#Home'),
     Tab_Setting = Window:addTab('#Settings'),
+    Tab_Event = Window:addTab('#Events'),
     Tab_2 = Window:addTab('#Main Farm'),
     Tab_SubFarm = Window:addTab('#Subs Farm'),
     Tab_3 = Window:addTab('#Quest'),
