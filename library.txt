@@ -1,0 +1,479 @@
+local UILibrary = {}
+
+-- Configurações padrão
+UILibrary.Theme = {
+    PrimaryColor = Color3.fromRGB(25, 25, 25),
+    SecondaryColor = Color3.fromRGB(40, 40, 40),
+    AccentColor = Color3.fromRGB(0, 120, 215),
+    TextColor = Color3.fromRGB(255, 255, 255),
+    DisabledColor = Color3.fromRGB(100, 100, 100)
+}
+
+-- Função para criar instâncias básicas
+function UILibrary:CreateInstance(className, properties)
+    local instance = Instance.new(className)
+    for property, value in pairs(properties) do
+        instance[property] = value
+    end
+    return instance
+end
+
+-- Criação da janela principal
+function UILibrary:CreateWindow(name, size, position)
+    local ScreenGui = self:CreateInstance("ScreenGui", {
+        Name = "UILibrary",
+        ResetOnSpawn = false
+    })
+    
+    local MainFrame = self:CreateInstance("Frame", {
+        Name = "MainFrame",
+        Size = size or UDim2.new(0, 300, 0, 400),
+        Position = position or UDim2.new(0.5, -150, 0.5, -200),
+        BackgroundColor3 = self.Theme.PrimaryColor,
+        ClipsDescendants = true,
+        Active = true,
+        Draggable = true,
+        Parent = ScreenGui
+    })
+    
+    -- TopBar
+    local TopBar = self:CreateInstance("Frame", {
+        Name = "TopBar",
+        Size = UDim2.new(1, 0, 0, 30),
+        BackgroundColor3 = self.Theme.SecondaryColor,
+        BorderSizePixel = 0,
+        Parent = MainFrame
+    })
+    
+    local TitleLabel = self:CreateInstance("TextLabel", {
+        Name = "TitleLabel",
+        Size = UDim2.new(0.7, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = name or "UI Library",
+        TextColor3 = self.Theme.TextColor,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        Parent = TopBar
+    })
+    
+    local MinimizeButton = self:CreateInstance("TextButton", {
+        Name = "MinimizeButton",
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(0.7, 0, 0, 0),
+        BackgroundTransparency = 1,
+        Text = "_",
+        TextColor3 = self.Theme.TextColor,
+        Font = Enum.Font.GothamBold,
+        TextSize = 16,
+        Parent = TopBar
+    })
+    
+    local CloseButton = self:CreateInstance("TextButton", {
+        Name = "CloseButton",
+        Size = UDim2.new(0, 30, 0, 30),
+        Position = UDim2.new(0.8, 0, 0, 0),
+        BackgroundTransparency = 1,
+        Text = "X",
+        TextColor3 = self.Theme.TextColor,
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        Parent = TopBar
+    })
+    
+    -- Container para os elementos
+    local Container = self:CreateInstance("ScrollingFrame", {
+        Name = "Container",
+        Size = UDim2.new(1, -10, 1, -40),
+        Position = UDim2.new(0, 5, 0, 35),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 5,
+        ScrollBarImageColor3 = self.Theme.SecondaryColor,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        Parent = MainFrame
+    })
+    
+    local UIListLayout = self:CreateInstance("UIListLayout", {
+        Name = "UIListLayout",
+        Padding = UDim.new(0, 5),
+        Parent = Container
+    })
+    
+    -- Funções da janela
+    local minimized = false
+    local originalSize = MainFrame.Size
+    
+    MinimizeButton.MouseButton1Click:Connect(function()
+        minimized = not minimized
+        if minimized then
+            MainFrame.Size = UDim2.new(MainFrame.Size.X.Scale, MainFrame.Size.X.Offset, 0, 30)
+            Container.Visible = false
+        else
+            MainFrame.Size = originalSize
+            Container.Visible = true
+        end
+    end)
+    
+    CloseButton.MouseButton1Click:Connect(function()
+        ScreenGui:Destroy()
+    end)
+    
+    -- Atualizar o tamanho do canvas automaticamente
+    UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        Container.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
+    end)
+    
+    local window = {
+        ScreenGui = ScreenGui,
+        MainFrame = MainFrame,
+        Container = Container,
+        TopBar = TopBar
+    }
+    
+    function window:SetPosition(newPosition)
+        MainFrame.Position = newPosition
+    end
+    
+    function window:SetSize(newSize)
+        MainFrame.Size = newSize
+        originalSize = newSize
+    end
+    
+    return window
+end
+
+-- Componente Button
+function UILibrary:CreateButton(parent, text, callback)
+    local Button = self:CreateInstance("TextButton", {
+        Name = "Button",
+        Size = UDim2.new(1, 0, 0, 30),
+        BackgroundColor3 = self.Theme.SecondaryColor,
+        BorderSizePixel = 0,
+        Text = text or "Button",
+        TextColor3 = self.Theme.TextColor,
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        Parent = parent.Container or parent
+    })
+    
+    local Corner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 4),
+        Parent = Button
+    })
+    
+    Button.MouseButton1Click:Connect(function()
+        if callback then
+            callback()
+        end
+    end)
+    
+    Button.MouseEnter:Connect(function()
+        game:GetService("TweenService"):Create(
+            Button,
+            TweenInfo.new(0.2),
+            {BackgroundColor3 = self.Theme.AccentColor}
+        ):Play()
+    end)
+    
+    Button.MouseLeave:Connect(function()
+        game:GetService("TweenService"):Create(
+            Button,
+            TweenInfo.new(0.2),
+            {BackgroundColor3 = self.Theme.SecondaryColor}
+        ):Play()
+    end)
+    
+    return Button
+end
+
+-- Componente Toggle
+function UILibrary:CreateToggle(parent, text, default, callback)
+    local ToggleFrame = self:CreateInstance("Frame", {
+        Name = "ToggleFrame",
+        Size = UDim2.new(1, 0, 0, 30),
+        BackgroundTransparency = 1,
+        Parent = parent.Container or parent
+    })
+    
+    local ToggleLabel = self:CreateInstance("TextLabel", {
+        Name = "ToggleLabel",
+        Size = UDim2.new(0.7, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = text or "Toggle",
+        TextColor3 = self.Theme.TextColor,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        Parent = ToggleFrame
+    })
+    
+    local ToggleButton = self:CreateInstance("TextButton", {
+        Name = "ToggleButton",
+        Size = UDim2.new(0, 50, 0, 25),
+        Position = UDim2.new(0.7, 0, 0.5, -12.5),
+        BackgroundColor3 = default and self.Theme.AccentColor or self.Theme.SecondaryColor,
+        AutoButtonColor = false,
+        BorderSizePixel = 0,
+        Parent = ToggleFrame
+    })
+    
+    local Corner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 12),
+        Parent = ToggleButton
+    })
+    
+    local ToggleCircle = self:CreateInstance("Frame", {
+        Name = "ToggleCircle",
+        Size = UDim2.new(0, 21, 0, 21),
+        Position = default and UDim2.new(0, 25, 0.5, -10.5) or UDim2.new(0, 4, 0.5, -10.5),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel = 0,
+        Parent = ToggleButton
+    })
+    
+    local CircleCorner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 10),
+        Parent = ToggleCircle
+    })
+    
+    local toggled = default or false
+    
+    ToggleButton.MouseButton1Click:Connect(function()
+        toggled = not toggled
+        
+        if toggled then
+            game:GetService("TweenService"):Create(
+                ToggleButton,
+                TweenInfo.new(0.2),
+                {BackgroundColor3 = self.Theme.AccentColor}
+            ):Play()
+            
+            game:GetService("TweenService"):Create(
+                ToggleCircle,
+                TweenInfo.new(0.2),
+                {Position = UDim2.new(0, 25, 0.5, -10.5)}
+            ):Play()
+        else
+            game:GetService("TweenService"):Create(
+                ToggleButton,
+                TweenInfo.new(0.2),
+                {BackgroundColor3 = self.Theme.SecondaryColor}
+            ):Play()
+            
+            game:GetService("TweenService"):Create(
+                ToggleCircle,
+                TweenInfo.new(0.2),
+                {Position = UDim2.new(0, 4, 0.5, -10.5)}
+            ):Play()
+        end
+        
+        if callback then
+            callback(toggled)
+        end
+    end)
+    
+    local toggle = {
+        Frame = ToggleFrame,
+        Value = toggled
+    }
+    
+    function toggle:SetValue(value)
+        toggled = value
+        
+        if toggled then
+            ToggleButton.BackgroundColor3 = self.Theme.AccentColor
+            ToggleCircle.Position = UDim2.new(0, 25, 0.5, -10.5)
+        else
+            ToggleButton.BackgroundColor3 = self.Theme.SecondaryColor
+            ToggleCircle.Position = UDim2.new(0, 4, 0.5, -10.5)
+        end
+        
+        if callback then
+            callback(toggled)
+        end
+    end
+    
+    function toggle:GetValue()
+        return toggled
+    end
+    
+    return toggle
+end
+
+-- Componente TextBox
+function UILibrary:CreateTextBox(parent, placeholder, callback)
+    local TextBoxFrame = self:CreateInstance("Frame", {
+        Name = "TextBoxFrame",
+        Size = UDim2.new(1, 0, 0, 30),
+        BackgroundColor3 = self.Theme.SecondaryColor,
+        BorderSizePixel = 0,
+        Parent = parent.Container or parent
+    })
+    
+    local Corner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 4),
+        Parent = TextBoxFrame
+    })
+    
+    local TextBox = self:CreateInstance("TextBox", {
+        Name = "TextBox",
+        Size = UDim2.new(1, -10, 1, 0),
+        Position = UDim2.new(0, 5, 0, 0),
+        BackgroundTransparency = 1,
+        Text = "",
+        PlaceholderText = placeholder or "Enter text...",
+        TextColor3 = self.Theme.TextColor,
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        Parent = TextBoxFrame
+    })
+    
+    TextBox.FocusLost:Connect(function()
+        if callback then
+            callback(TextBox.Text)
+        end
+    end)
+    
+    return TextBox
+end
+
+-- Componente TextLabel
+function UILibrary:CreateTextLabel(parent, text)
+    local TextLabel = self:CreateInstance("TextLabel", {
+        Name = "TextLabel",
+        Size = UDim2.new(1, 0, 0, 20),
+        BackgroundTransparency = 1,
+        Text = text or "Text Label",
+        TextColor3 = self.Theme.TextColor,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        Parent = parent.Container or parent
+    })
+    
+    return TextLabel
+end
+
+-- Componente ScrollBar (personalizado)
+function UILibrary:CreateScrollBar(parent, min, max, defaultValue, callback)
+    local ScrollBarFrame = self:CreateInstance("Frame", {
+        Name = "ScrollBarFrame",
+        Size = UDim2.new(1, 0, 0, 30),
+        BackgroundTransparency = 1,
+        Parent = parent.Container or parent
+    })
+    
+    local ScrollBar = self:CreateInstance("Frame", {
+        Name = "ScrollBar",
+        Size = UDim2.new(1, 0, 0, 5),
+        Position = UDim2.new(0, 0, 0.5, -2.5),
+        BackgroundColor3 = self.Theme.SecondaryColor,
+        BorderSizePixel = 0,
+        Parent = ScrollBarFrame
+    })
+    
+    local Corner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 2),
+        Parent = ScrollBar
+    })
+    
+    local Slider = self:CreateInstance("TextButton", {
+        Name = "Slider",
+        Size = UDim2.new(0, 15, 0, 15),
+        Position = UDim2.new((defaultValue or 0) / (max or 100), -7.5, 0.5, -7.5),
+        BackgroundColor3 = self.Theme.AccentColor,
+        AutoButtonColor = false,
+        BorderSizePixel = 0,
+        Text = "",
+        Parent = ScrollBarFrame
+    })
+    
+    local SliderCorner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 7),
+        Parent = Slider
+    })
+    
+    local ValueLabel = self:CreateInstance("TextLabel", {
+        Name = "ValueLabel",
+        Size = UDim2.new(0, 50, 0, 15),
+        Position = UDim2.new(1, 5, 0.5, -7.5),
+        BackgroundTransparency = 1,
+        Text = tostring(defaultValue or 0),
+        TextColor3 = self.Theme.TextColor,
+        Font = Enum.Font.Gotham,
+        TextSize = 12,
+        Parent = ScrollBarFrame
+    })
+    
+    local dragging = false
+    local currentValue = defaultValue or 0
+    
+    local function updateValue(input)
+        local pos = UDim2.new(
+            math.clamp((input.Position.X - ScrollBar.AbsolutePosition.X) / ScrollBar.AbsoluteSize.X, 0, 1),
+            0,
+            0.5,
+            -7.5
+        )
+        
+        Slider.Position = pos
+        
+        local value = math.floor(((pos.X.Scale * (max or 100)) + 0.5))
+        if value ~= currentValue then
+            currentValue = value
+            ValueLabel.Text = tostring(value)
+            
+            if callback then
+                callback(value)
+            end
+        end
+    end
+    
+    Slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
+    end)
+    
+    Slider.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+    
+    game:GetService("UserInputService").InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            updateValue(input)
+        end
+    end)
+    
+    ScrollBarFrame.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            updateValue(input)
+        end
+    end)
+    
+    local scrollBar = {
+        Frame = ScrollBarFrame,
+        Value = currentValue
+    }
+    
+    function scrollBar:SetValue(value)
+        currentValue = math.clamp(value, min or 0, max or 100)
+        Slider.Position = UDim2.new(currentValue / (max or 100), -7.5, 0.5, -7.5)
+        ValueLabel.Text = tostring(currentValue)
+        
+        if callback then
+            callback(currentValue)
+        end
+    end
+    
+    function scrollBar:GetValue()
+        return currentValue
+    end
+    
+    return scrollBar
+end
+
+return UILibrary
