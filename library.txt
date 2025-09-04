@@ -1,13 +1,20 @@
 local UILibrary = {}
 
--- Configurações padrão
+-- Configurações do tema Fluent
 UILibrary.Theme = {
-    PrimaryColor = Color3.fromRGB(25, 25, 25),
+    PrimaryColor = Color3.fromRGB(32, 32, 32),
     SecondaryColor = Color3.fromRGB(40, 40, 40),
     AccentColor = Color3.fromRGB(0, 120, 215),
     TextColor = Color3.fromRGB(255, 255, 255),
-    DisabledColor = Color3.fromRGB(100, 100, 100)
+    SubTextColor = Color3.fromRGB(200, 200, 200),
+    DisabledColor = Color3.fromRGB(90, 90, 90),
+    HoverColor = Color3.fromRGB(50, 50, 50),
+    BorderColor = Color3.fromRGB(70, 70, 70)
 }
+
+-- Serviços
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
 -- Função para criar instâncias básicas
 function UILibrary:CreateInstance(className, properties)
@@ -18,17 +25,36 @@ function UILibrary:CreateInstance(className, properties)
     return instance
 end
 
--- Criação da janela principal
+-- Função para criar efeito de acrílico (transparência com desfoque)
+function UILibrary:CreateAcrylicEffect(parent)
+    local Frame = self:CreateInstance("Frame", {
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundColor3 = self.Theme.PrimaryColor,
+        BackgroundTransparency = 0.1,
+        BorderSizePixel = 0,
+        Parent = parent
+    })
+    
+    local Corner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 8),
+        Parent = Frame
+    })
+    
+    return Frame
+end
+
+-- Criação da janela principal no estilo Fluent
 function UILibrary:CreateWindow(name, size, position)
     local ScreenGui = self:CreateInstance("ScreenGui", {
-        Name = "UILibrary",
-        ResetOnSpawn = false
+        Name = "FluentUI",
+        ResetOnSpawn = false,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     })
     
     local MainFrame = self:CreateInstance("Frame", {
         Name = "MainFrame",
-        Size = size or UDim2.new(0, 300, 0, 400),
-        Position = position or UDim2.new(0.5, -150, 0.5, -200),
+        Size = size or UDim2.new(0, 350, 0, 450),
+        Position = position or UDim2.new(0.5, -175, 0.5, -225),
         BackgroundColor3 = self.Theme.PrimaryColor,
         ClipsDescendants = true,
         Active = true,
@@ -36,67 +62,120 @@ function UILibrary:CreateWindow(name, size, position)
         Parent = ScreenGui
     })
     
-    -- TopBar
+    local MainCorner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 8),
+        Parent = MainFrame
+    })
+    
+    local MainStroke = self:CreateInstance("UIStroke", {
+        Color = self.Theme.BorderColor,
+        Thickness = 1,
+        Parent = MainFrame
+    })
+    
+    -- Efeito de sombra
+    local Shadow = self:CreateInstance("ImageLabel", {
+        Name = "Shadow",
+        Size = UDim2.new(1, 10, 1, 10),
+        Position = UDim2.new(0, -5, 0, -5),
+        BackgroundTransparency = 1,
+        Image = "rbxassetid://5554236805",
+        ImageColor3 = Color3.fromRGB(0, 0, 0),
+        ImageTransparency = 0.8,
+        ScaleType = Enum.ScaleType.Slice,
+        SliceCenter = Rect.new(10, 10, 118, 118),
+        ZIndex = 0,
+        Parent = MainFrame
+    })
+    
+    -- TopBar no estilo Fluent
     local TopBar = self:CreateInstance("Frame", {
         Name = "TopBar",
-        Size = UDim2.new(1, 0, 0, 30),
+        Size = UDim2.new(1, 0, 0, 40),
         BackgroundColor3 = self.Theme.SecondaryColor,
         BorderSizePixel = 0,
+        ZIndex = 2,
         Parent = MainFrame
+    })
+    
+    local TopBarCorner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 8),
+        Parent = TopBar
     })
     
     local TitleLabel = self:CreateInstance("TextLabel", {
         Name = "TitleLabel",
         Size = UDim2.new(0.7, 0, 1, 0),
+        Position = UDim2.new(0, 15, 0, 0),
         BackgroundTransparency = 1,
-        Text = name or "UI Library",
+        Text = name or "Fluent UI",
         TextColor3 = self.Theme.TextColor,
         TextXAlignment = Enum.TextXAlignment.Left,
         Font = Enum.Font.Gotham,
-        TextSize = 14,
+        TextSize = 16,
+        ZIndex = 2,
+        Parent = TopBar
+    })
+    
+    local ButtonContainer = self:CreateInstance("Frame", {
+        Name = "ButtonContainer",
+        Size = UDim2.new(0, 70, 1, 0),
+        Position = UDim2.new(1, -70, 0, 0),
+        BackgroundTransparency = 1,
+        ZIndex = 2,
         Parent = TopBar
     })
     
     local MinimizeButton = self:CreateInstance("TextButton", {
         Name = "MinimizeButton",
-        Size = UDim2.new(0, 30, 0, 30),
-        Position = UDim2.new(0.7, 0, 0, 0),
+        Size = UDim2.new(0, 35, 1, 0),
+        Position = UDim2.new(0, 0, 0, 0),
         BackgroundTransparency = 1,
-        Text = "_",
+        Text = "-",
         TextColor3 = self.Theme.TextColor,
         Font = Enum.Font.GothamBold,
-        TextSize = 16,
-        Parent = TopBar
+        TextSize = 18,
+        ZIndex = 2,
+        Parent = ButtonContainer
     })
     
     local CloseButton = self:CreateInstance("TextButton", {
         Name = "CloseButton",
-        Size = UDim2.new(0, 30, 0, 30),
-        Position = UDim2.new(0.8, 0, 0, 0),
+        Size = UDim2.new(0, 35, 1, 0),
+        Position = UDim2.new(0, 35, 0, 0),
         BackgroundTransparency = 1,
-        Text = "X",
+        Text = "×",
         TextColor3 = self.Theme.TextColor,
         Font = Enum.Font.Gotham,
-        TextSize = 14,
-        Parent = TopBar
+        TextSize = 20,
+        ZIndex = 2,
+        Parent = ButtonContainer
     })
     
     -- Container para os elementos
     local Container = self:CreateInstance("ScrollingFrame", {
         Name = "Container",
-        Size = UDim2.new(1, -10, 1, -40),
-        Position = UDim2.new(0, 5, 0, 35),
+        Size = UDim2.new(1, -20, 1, -50),
+        Position = UDim2.new(0, 10, 0, 45),
         BackgroundTransparency = 1,
         BorderSizePixel = 0,
         ScrollBarThickness = 5,
         ScrollBarImageColor3 = self.Theme.SecondaryColor,
+        ScrollBarImageTransparency = 0.5,
         CanvasSize = UDim2.new(0, 0, 0, 0),
         Parent = MainFrame
     })
     
     local UIListLayout = self:CreateInstance("UIListLayout", {
         Name = "UIListLayout",
-        Padding = UDim.new(0, 5),
+        Padding = UDim.new(0, 10),
+        Parent = Container
+    })
+    
+    local UIPadding = self:CreateInstance("UIPadding", {
+        Name = "UIPadding",
+        PaddingTop = UDim.new(0, 5),
+        PaddingBottom = UDim.new(0, 5),
         Parent = Container
     })
     
@@ -107,21 +186,59 @@ function UILibrary:CreateWindow(name, size, position)
     MinimizeButton.MouseButton1Click:Connect(function()
         minimized = not minimized
         if minimized then
-            MainFrame.Size = UDim2.new(MainFrame.Size.X.Scale, MainFrame.Size.X.Offset, 0, 30)
+            TweenService:Create(
+                MainFrame,
+                TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Size = UDim2.new(MainFrame.Size.X.Scale, MainFrame.Size.X.Offset, 0, 40)}
+            ):Play()
             Container.Visible = false
+            MinimizeButton.Text = "+"
         else
-            MainFrame.Size = originalSize
+            TweenService:Create(
+                MainFrame,
+                TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Size = originalSize}
+            ):Play()
             Container.Visible = true
+            MinimizeButton.Text = "-"
         end
     end)
     
     CloseButton.MouseButton1Click:Connect(function()
+        TweenService:Create(
+            MainFrame,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {Size = UDim2.new(0, 0, 0, 0)}
+        ):Play()
+        wait(0.3)
         ScreenGui:Destroy()
     end)
     
+    -- Efeitos de hover nos botões
+    local function setupButtonHover(button)
+        button.MouseEnter:Connect(function()
+            TweenService:Create(
+                button,
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {BackgroundColor3 = self.Theme.HoverColor}
+            ):Play()
+        end)
+        
+        button.MouseLeave:Connect(function()
+            TweenService:Create(
+                button,
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {BackgroundTransparency = 1}
+            ):Play()
+        end)
+    end
+    
+    setupButtonHover(MinimizeButton)
+    setupButtonHover(CloseButton)
+    
     -- Atualizar o tamanho do canvas automaticamente
     UIListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        Container.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y)
+        Container.CanvasSize = UDim2.new(0, 0, 0, UIListLayout.AbsoluteContentSize.Y + 10)
     end)
     
     local window = {
@@ -143,17 +260,18 @@ function UILibrary:CreateWindow(name, size, position)
     return window
 end
 
--- Componente Button
+-- Componente Button no estilo Fluent
 function UILibrary:CreateButton(parent, text, callback)
     local Button = self:CreateInstance("TextButton", {
         Name = "Button",
-        Size = UDim2.new(1, 0, 0, 30),
+        Size = UDim2.new(1, 0, 0, 36),
         BackgroundColor3 = self.Theme.SecondaryColor,
         BorderSizePixel = 0,
         Text = text or "Button",
         TextColor3 = self.Theme.TextColor,
         Font = Enum.Font.Gotham,
         TextSize = 14,
+        AutoButtonColor = false,
         Parent = parent.Container or parent
     })
     
@@ -169,25 +287,41 @@ function UILibrary:CreateButton(parent, text, callback)
     end)
     
     Button.MouseEnter:Connect(function()
-        game:GetService("TweenService"):Create(
+        TweenService:Create(
             Button,
-            TweenInfo.new(0.2),
-            {BackgroundColor3 = self.Theme.AccentColor}
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundColor3 = self.Theme.HoverColor}
         ):Play()
     end)
     
     Button.MouseLeave:Connect(function()
-        game:GetService("TweenService"):Create(
+        TweenService:Create(
             Button,
-            TweenInfo.new(0.2),
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
             {BackgroundColor3 = self.Theme.SecondaryColor}
+        ):Play()
+    end)
+    
+    Button.MouseButton1Down:Connect(function()
+        TweenService:Create(
+            Button,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundColor3 = self.Theme.AccentColor}
+        ):Play()
+    end)
+    
+    Button.MouseButton1Up:Connect(function()
+        TweenService:Create(
+            Button,
+            TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundColor3 = self.Theme.HoverColor}
         ):Play()
     end)
     
     return Button
 end
 
--- Componente Toggle
+-- Componente Toggle no estilo Fluent
 function UILibrary:CreateToggle(parent, text, default, callback)
     local ToggleFrame = self:CreateInstance("Frame", {
         Name = "ToggleFrame",
@@ -210,8 +344,8 @@ function UILibrary:CreateToggle(parent, text, default, callback)
     
     local ToggleButton = self:CreateInstance("TextButton", {
         Name = "ToggleButton",
-        Size = UDim2.new(0, 50, 0, 25),
-        Position = UDim2.new(0.7, 0, 0.5, -12.5),
+        Size = UDim2.new(0, 44, 0, 24),
+        Position = UDim2.new(1, -44, 0.5, -12),
         BackgroundColor3 = default and self.Theme.AccentColor or self.Theme.SecondaryColor,
         AutoButtonColor = false,
         BorderSizePixel = 0,
@@ -225,8 +359,8 @@ function UILibrary:CreateToggle(parent, text, default, callback)
     
     local ToggleCircle = self:CreateInstance("Frame", {
         Name = "ToggleCircle",
-        Size = UDim2.new(0, 21, 0, 21),
-        Position = default and UDim2.new(0, 25, 0.5, -10.5) or UDim2.new(0, 4, 0.5, -10.5),
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = default and UDim2.new(0, 22, 0.5, -10) or UDim2.new(0, 2, 0.5, -10),
         BackgroundColor3 = Color3.fromRGB(255, 255, 255),
         BorderSizePixel = 0,
         Parent = ToggleButton
@@ -243,28 +377,28 @@ function UILibrary:CreateToggle(parent, text, default, callback)
         toggled = not toggled
         
         if toggled then
-            game:GetService("TweenService"):Create(
+            TweenService:Create(
                 ToggleButton,
-                TweenInfo.new(0.2),
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
                 {BackgroundColor3 = self.Theme.AccentColor}
             ):Play()
             
-            game:GetService("TweenService"):Create(
+            TweenService:Create(
                 ToggleCircle,
-                TweenInfo.new(0.2),
-                {Position = UDim2.new(0, 25, 0.5, -10.5)}
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Position = UDim2.new(0, 22, 0.5, -10)}
             ):Play()
         else
-            game:GetService("TweenService"):Create(
+            TweenService:Create(
                 ToggleButton,
-                TweenInfo.new(0.2),
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
                 {BackgroundColor3 = self.Theme.SecondaryColor}
             ):Play()
             
-            game:GetService("TweenService"):Create(
+            TweenService:Create(
                 ToggleCircle,
-                TweenInfo.new(0.2),
-                {Position = UDim2.new(0, 4, 0.5, -10.5)}
+                TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Position = UDim2.new(0, 2, 0.5, -10)}
             ):Play()
         end
         
@@ -283,10 +417,10 @@ function UILibrary:CreateToggle(parent, text, default, callback)
         
         if toggled then
             ToggleButton.BackgroundColor3 = self.Theme.AccentColor
-            ToggleCircle.Position = UDim2.new(0, 25, 0.5, -10.5)
+            ToggleCircle.Position = UDim2.new(0, 22, 0.5, -10)
         else
             ToggleButton.BackgroundColor3 = self.Theme.SecondaryColor
-            ToggleCircle.Position = UDim2.new(0, 4, 0.5, -10.5)
+            ToggleCircle.Position = UDim2.new(0, 2, 0.5, -10)
         end
         
         if callback then
@@ -301,11 +435,11 @@ function UILibrary:CreateToggle(parent, text, default, callback)
     return toggle
 end
 
--- Componente TextBox
+-- Componente TextBox no estilo Fluent
 function UILibrary:CreateTextBox(parent, placeholder, callback)
     local TextBoxFrame = self:CreateInstance("Frame", {
         Name = "TextBoxFrame",
-        Size = UDim2.new(1, 0, 0, 30),
+        Size = UDim2.new(1, 0, 0, 36),
         BackgroundColor3 = self.Theme.SecondaryColor,
         BorderSizePixel = 0,
         Parent = parent.Container or parent
@@ -318,111 +452,161 @@ function UILibrary:CreateTextBox(parent, placeholder, callback)
     
     local TextBox = self:CreateInstance("TextBox", {
         Name = "TextBox",
-        Size = UDim2.new(1, -10, 1, 0),
-        Position = UDim2.new(0, 5, 0, 0),
+        Size = UDim2.new(1, -16, 1, 0),
+        Position = UDim2.new(0, 8, 0, 0),
         BackgroundTransparency = 1,
         Text = "",
         PlaceholderText = placeholder or "Enter text...",
         TextColor3 = self.Theme.TextColor,
+        PlaceholderColor3 = self.Theme.SubTextColor,
         Font = Enum.Font.Gotham,
         TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left,
         Parent = TextBoxFrame
     })
     
-    TextBox.FocusLost:Connect(function()
+    TextBox.FocusLost:Connect(function(enterPressed)
         if callback then
-            callback(TextBox.Text)
+            callback(TextBox.Text, enterPressed)
         end
+    end)
+    
+    TextBox.Focused:Connect(function()
+        TweenService:Create(
+            TextBoxFrame,
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundColor3 = self.Theme.HoverColor}
+        ):Play()
+    end)
+    
+    TextBox.FocusLost:Connect(function()
+        TweenService:Create(
+            TextBoxFrame,
+            TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {BackgroundColor3 = self.Theme.SecondaryColor}
+        ):Play()
     end)
     
     return TextBox
 end
 
--- Componente TextLabel
-function UILibrary:CreateTextLabel(parent, text)
+-- Componente TextLabel no estilo Fluent
+function UILibrary:CreateTextLabel(parent, text, isSubText)
     local TextLabel = self:CreateInstance("TextLabel", {
         Name = "TextLabel",
         Size = UDim2.new(1, 0, 0, 20),
         BackgroundTransparency = 1,
         Text = text or "Text Label",
-        TextColor3 = self.Theme.TextColor,
+        TextColor3 = isSubText and self.Theme.SubTextColor or self.Theme.TextColor,
         TextXAlignment = Enum.TextXAlignment.Left,
         Font = Enum.Font.Gotham,
-        TextSize = 14,
+        TextSize = isSubText and 12 or 14,
         Parent = parent.Container or parent
     })
     
     return TextLabel
 end
 
--- Componente ScrollBar (personalizado)
-function UILibrary:CreateScrollBar(parent, min, max, defaultValue, callback)
-    local ScrollBarFrame = self:CreateInstance("Frame", {
-        Name = "ScrollBarFrame",
-        Size = UDim2.new(1, 0, 0, 30),
+-- Componente ScrollBar (Slider) no estilo Fluent
+function UILibrary:CreateSlider(parent, text, min, max, defaultValue, callback)
+    local SliderFrame = self:CreateInstance("Frame", {
+        Name = "SliderFrame",
+        Size = UDim2.new(1, 0, 0, 60),
         BackgroundTransparency = 1,
         Parent = parent.Container or parent
     })
     
-    local ScrollBar = self:CreateInstance("Frame", {
-        Name = "ScrollBar",
-        Size = UDim2.new(1, 0, 0, 5),
-        Position = UDim2.new(0, 0, 0.5, -2.5),
-        BackgroundColor3 = self.Theme.SecondaryColor,
-        BorderSizePixel = 0,
-        Parent = ScrollBarFrame
-    })
-    
-    local Corner = self:CreateInstance("UICorner", {
-        CornerRadius = UDim.new(0, 2),
-        Parent = ScrollBar
-    })
-    
-    local Slider = self:CreateInstance("TextButton", {
-        Name = "Slider",
-        Size = UDim2.new(0, 15, 0, 15),
-        Position = UDim2.new((defaultValue or 0) / (max or 100), -7.5, 0.5, -7.5),
-        BackgroundColor3 = self.Theme.AccentColor,
-        AutoButtonColor = false,
-        BorderSizePixel = 0,
-        Text = "",
-        Parent = ScrollBarFrame
-    })
-    
-    local SliderCorner = self:CreateInstance("UICorner", {
-        CornerRadius = UDim.new(0, 7),
-        Parent = Slider
+    local TitleLabel = self:CreateInstance("TextLabel", {
+        Name = "TitleLabel",
+        Size = UDim2.new(1, 0, 0, 20),
+        BackgroundTransparency = 1,
+        Text = text or "Slider",
+        TextColor3 = self.Theme.TextColor,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        Parent = SliderFrame
     })
     
     local ValueLabel = self:CreateInstance("TextLabel", {
         Name = "ValueLabel",
-        Size = UDim2.new(0, 50, 0, 15),
-        Position = UDim2.new(1, 5, 0.5, -7.5),
+        Size = UDim2.new(0, 50, 0, 20),
+        Position = UDim2.new(1, -50, 0, 0),
         BackgroundTransparency = 1,
         Text = tostring(defaultValue or 0),
-        TextColor3 = self.Theme.TextColor,
+        TextColor3 = self.Theme.SubTextColor,
+        TextXAlignment = Enum.TextXAlignment.Right,
         Font = Enum.Font.Gotham,
         TextSize = 12,
-        Parent = ScrollBarFrame
+        Parent = SliderFrame
+    })
+    
+    local Track = self:CreateInstance("Frame", {
+        Name = "Track",
+        Size = UDim2.new(1, 0, 0, 4),
+        Position = UDim2.new(0, 0, 0, 30),
+        BackgroundColor3 = self.Theme.SecondaryColor,
+        BorderSizePixel = 0,
+        Parent = SliderFrame
+    })
+    
+    local TrackCorner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 2),
+        Parent = Track
+    })
+    
+    local Fill = self:CreateInstance("Frame", {
+        Name = "Fill",
+        Size = UDim2.new((defaultValue or 0) / (max or 100), 0, 1, 0),
+        BackgroundColor3 = self.Theme.AccentColor,
+        BorderSizePixel = 0,
+        Parent = Track
+    })
+    
+    local FillCorner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 2),
+        Parent = Fill
+    })
+    
+    local Thumb = self:CreateInstance("TextButton", {
+        Name = "Thumb",
+        Size = UDim2.new(0, 20, 0, 20),
+        Position = UDim2.new((defaultValue or 0) / (max or 100), -10, 0.5, -10),
+        BackgroundColor3 = Color3.fromRGB(255, 255, 255),
+        AutoButtonColor = false,
+        BorderSizePixel = 0,
+        Text = "",
+        Parent = Track
+    })
+    
+    local ThumbCorner = self:CreateInstance("UICorner", {
+        CornerRadius = UDim.new(0, 10),
+        Parent = Thumb
     })
     
     local dragging = false
     local currentValue = defaultValue or 0
     
     local function updateValue(input)
-        local pos = UDim2.new(
-            math.clamp((input.Position.X - ScrollBar.AbsolutePosition.X) / ScrollBar.AbsoluteSize.X, 0, 1),
-            0,
-            0.5,
-            -7.5
-        )
+        local relativeX = (input.Position.X - Track.AbsolutePosition.X) / Track.AbsoluteSize.X
+        local value = math.floor(((relativeX * (max - min)) + min) + 0.5)
+        value = math.clamp(value, min, max)
         
-        Slider.Position = pos
-        
-        local value = math.floor(((pos.X.Scale * (max or 100)) + 0.5))
         if value ~= currentValue then
             currentValue = value
             ValueLabel.Text = tostring(value)
+            
+            TweenService:Create(
+                Fill,
+                TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Size = UDim2.new(relativeX, 0, 1, 0)}
+            ):Play()
+            
+            TweenService:Create(
+                Thumb,
+                TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+                {Position = UDim2.new(relativeX, -10, 0.5, -10)}
+            ):Play()
             
             if callback then
                 callback(value)
@@ -430,50 +614,53 @@ function UILibrary:CreateScrollBar(parent, min, max, defaultValue, callback)
         end
     end
     
-    Slider.InputBegan:Connect(function(input)
+    Thumb.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
         end
     end)
     
-    Slider.InputEnded:Connect(function(input)
+    Thumb.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
         end
     end)
     
-    game:GetService("UserInputService").InputChanged:Connect(function(input)
+    UserInputService.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             updateValue(input)
         end
     end)
     
-    ScrollBarFrame.InputBegan:Connect(function(input)
+    Track.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             updateValue(input)
         end
     end)
     
-    local scrollBar = {
-        Frame = ScrollBarFrame,
+    local slider = {
+        Frame = SliderFrame,
         Value = currentValue
     }
     
-    function scrollBar:SetValue(value)
-        currentValue = math.clamp(value, min or 0, max or 100)
-        Slider.Position = UDim2.new(currentValue / (max or 100), -7.5, 0.5, -7.5)
+    function slider:SetValue(value)
+        currentValue = math.clamp(value, min, max)
+        local relativeX = (currentValue - min) / (max - min)
+        
         ValueLabel.Text = tostring(currentValue)
+        Fill.Size = UDim2.new(relativeX, 0, 1, 0)
+        Thumb.Position = UDim2.new(relativeX, -10, 0.5, -10)
         
         if callback then
             callback(currentValue)
         end
     end
     
-    function scrollBar:GetValue()
+    function slider:GetValue()
         return currentValue
     end
     
-    return scrollBar
+    return slider
 end
 
 return UILibrary
